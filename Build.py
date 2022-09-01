@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
 import os
 import unicodedata
+from time import ctime
 from urllib.request import urlopen
 
-Name = "twemoji-amazing"
+Name = "twemoji-astonishing"
 EmojiVer = "15.0"
 
 # https://stackoverflow.com/a/518232
 def StripAccents(s):
 	return ''.join(c for c in unicodedata.normalize('NFD', s)
 		if unicodedata.category(c) != 'Mn')
-
-#https://unpkg.com/emoji.json@13.1.0/emoji.json
 
 def ReplaceList(Text, Match, Replace):
 	for m in Match:
@@ -58,11 +57,14 @@ def Main():
 	for Line in Data.splitlines():
 		if CheckEmojiLine(Line):
 			Emojis += [GetEmojiMeta(Line)]
+	EmojiCount = str(len(Emojis))
 
 	print(f"[I] Writing CSS")
 	CSS = ""
 	with open("Preamble.css", "r") as f:
-		CSS += f.read()
+		CSS += f.read() + "\n"
+	with open("Comment.css", "r") as f:
+		Comment = f.read().replace("{BuildTime}", ctime()).replace("{EmojiCount}", EmojiCount)
 	for Emoji in Emojis:
 		CSS += f"""\
 .twa-{Emoji["Name"]}, .twa-{Emoji["Char"]} {{
@@ -70,9 +72,9 @@ def Main():
 }}
 """
 	with open(f"{Name}.css", "w") as f:
-		f.write(CSS)
+		f.write(CSS.replace("/*{CommentBlock}*/", Comment))
 	with open(f"{Name}.min.css", "w") as f:
-		f.write(MinifyCSS(CSS))
+		f.write(MinifyCSS(CSS).replace("/*{CommentBlock}*/", "\n"+Comment))
 
 if __name__ == "__main__":
 	Main()
