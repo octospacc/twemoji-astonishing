@@ -1,0 +1,16 @@
+image: alpine:latest
+
+before_script: |
+  apk update
+  apk add python3 wget tar p7zip
+
+pages:
+  stage: deploy
+  script: |
+    python3.10 ./Build.py
+    ./Tools/DeployPages.sh
+  artifacts:
+    paths:
+    - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

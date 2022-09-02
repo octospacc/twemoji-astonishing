@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import unicodedata
 from time import ctime
 from urllib.request import urlopen
+from Tools import rcssmin
 
-Name = "twemoji-astonishing"
-EmojiVer = "15.0"
+cssmin = rcssmin._make_cssmin(python_only=True)
 
 # https://stackoverflow.com/a/518232
 def StripAccents(s):
@@ -16,6 +17,17 @@ def ReplaceList(Text, Match, Replace):
 	for m in Match:
 		Text = Text.replace(m, Replace)
 	return Text
+
+def GetEmojiData(EmojiVer):
+	Response = urlopen(f"https://unicode.org/Public/emoji/{EmojiVer}/emoji-test.txt")
+	return Response.read().decode("utf-8")
+
+def ParseEmojiData(Data):
+	Emojis = []
+	for Line in Data.splitlines():
+		if CheckEmojiLine(Line):
+			Emojis += [GetEmojiMeta(Line)]
+	return Emojis
 
 def CheckEmojiLine(Line):
 	if Line.startswith("#"):
@@ -41,40 +53,61 @@ def GetEmojiMeta(Line):
 
 	return {"Code":Code, "Char":Char, "Name":Name}
 
-def MinifyCSS(CSS):
-	return ReplaceList(CSS, ["\n","\t"," "], "")
-
-def Main():
-	#print("[I] Cloning Twemoji repo")
-	#os.system("git clone --depth 1 https://github.com/twitter/twemoji")
-
-	print(f"[I] Getting v{EmojiVer} emoji data")
-	Response = urlopen(f"https://unicode.org/Public/emoji/{EmojiVer}/emoji-test.txt")
-
-	print("[I] Parsing emoji data")
-	Emojis = []
-	Data = Response.read().decode("utf-8")
-	for Line in Data.splitlines():
-		if CheckEmojiLine(Line):
-			Emojis += [GetEmojiMeta(Line)]
-	EmojiCount = str(len(Emojis))
-
-	print(f"[I] Writing CSS")
-	CSS = ""
+def WriteCSS(Emojis, URLPrefix):
 	with open("Preamble.css", "r") as f:
-		CSS += f.read() + "\n"
+		Preamble = f.read() + "\n"
 	with open("Comment.css", "r") as f:
-		Comment = f.read().replace("{BuildTime}", ctime()).replace("{EmojiCount}", EmojiCount)
-	for Emoji in Emojis:
-		CSS += f"""\
-.twa-{Emoji["Name"]}, .twa-{Emoji["Char"]} {{
-	background-image: url("{Emoji["Code"]}.svg");
+		Comment = f.read().format(BuildTime=ctime(), EmojiCount=str(len(Emojis)))
+
+	try:
+		os.mkdir("Build")
+	except FileExistsError:
+		pass
+
+	for Type in ["Chars Names", "Chars", "Names"]:
+		CSS = Preamble
+		Line = ""
+		if "Chars" in Type:
+			Line = ".twa-{EmojiChar} " + Line
+		if "Names" in Type:
+			Line = ".twa-{EmojiName} " + Line
+		if Type == "Chars Names":
+			Line = Line.replace(" .twa-", ", .twa-")
+
+		for Emoji in Emojis:
+			NewLine = Line.format(EmojiChar=Emoji["Char"], EmojiName=Emoji["Name"])
+			CSS += f"""\
+{NewLine}{{
+	background-image: url("{URLPrefix}{Emoji["Code"]}.svg");
 }}
 """
-	with open(f"{Name}.css", "w") as f:
-		f.write(CSS.replace("/*{CommentBlock}*/", Comment))
-	with open(f"{Name}.min.css", "w") as f:
-		f.write(MinifyCSS(CSS).replace("/*{CommentBlock}*/", "\n"+Comment))
+		FileName = "twemoji-astonishing"
+		if Type == "Chars":
+			FileName += ".chars"
+		elif Type == "Names":
+			FileName += ".names"
+
+		with open(f"Build/{FileName}.css", "w") as f:
+			f.write(CSS.replace("{CommentBlock}", Comment))
+		with open(f"Build/{FileName}.min.css", "w") as f:
+			f.write(cssmin(CSS).replace("{CommentBlock}", "\n"+Comment))
+
+def Main(Args):
+	EmojiVer = Args.EmojiVer if Args.EmojiVer else "15.0"
+	URLPrefix = Args.URLPrefix if Args.URLPrefix else ""
+
+	print(f"[I] Getting v{EmojiVer} emoji data")
+	Data = GetEmojiData(EmojiVer)
+
+	print("[I] Parsing emoji data")
+	Emojis = ParseEmojiData(Data)
+
+	print(f"[I] Writing CSS")
+	WriteCSS(Emojis, URLPrefix)
 
 if __name__ == "__main__":
-	Main()
+	Parser = argparse.ArgumentParser()
+	Parser.add_argument('--EmojiVer', type=str)
+	Parser.add_argument('--URLPrefix', type=str)
+
+	Main(Parser.parse_args())

@@ -1,5 +1,5 @@
 @charset "UTF-8";
-/*{CommentBlock}*/
+{CommentBlock}
 
 .twa {
 	display: inline-block;
@@ -13,7 +13,7 @@
 }
 
 /* Prevent image and fallback text emoji overlap */
-.twa span {
+.twa > span {
 	font-size: 0px;
 }
 

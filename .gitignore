@@ -1,3 +1,6 @@
+*.pyc
+twemoji.tar.gz
 twemoji/
-twemoji-astonishing.css
-twemoji-astonishing.min.css
+twemoji-astonishing/
+Build/
+public/
