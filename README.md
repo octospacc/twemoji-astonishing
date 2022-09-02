@@ -2,7 +2,9 @@
 
 Like **Font-Awesome, but for [Twitter Emojis](https://github.com/twitter/twemoji)** - and this time, it's astonishing! 😄
 
-Modern replacement for projects like [twemoji-amazing](https://github.com/SebastianAigner/twemoji-amazing), with some quality-of-life improvements:
+![Banner with some emojis](Banner.png)
+
+Modern drop-in replacement for projects like [Twemoji-Amazing](https://github.com/SebastianAigner/twemoji-amazing), with some quality-of-life improvements:
 
 - Easy support for fallback text emojis
 - Literal emojis as CSS class names, in addition to text names
@@ -15,7 +17,7 @@ You can get your preferred variant of the CSS file for use in your webpages:
 
 - `twemoji-astonishing`: The full package with all the features
 - `twemoji-astonishing.chars`: Only literal emojis used as class names
-- `twemoji-astonishing.names`: Only ASCII names used as class names, like twemoji-amazing
+- `twemoji-astonishing.names`: Only ASCII names used as class names, like Twemoji-Amazing
 
 Every variant, of course, has both a pure (`.css`) version, and a minified (`.min.css`) one.
 
@@ -76,9 +78,9 @@ Running `./Tools/BuildCSS.py` generates all final CSS files. Requires Python >= 
 
 ## Credits and Licenses
 
-License for Twemoji-Astonishing our scripts, snippets, and documentation: [MIT](https://mit-license.org).
+License for Twemoji-Astonishing scripts, snippets, and documentation: [MIT](https://mit-license.org).
 
-Uses CSS snippets from [twemoji-amazing](https://github.com/SebastianAigner/twemoji-amazing), licensed under [MIT](https://mit-license.org).
+Uses CSS snippets from [Twemoji-Amazing](https://github.com/SebastianAigner/twemoji-amazing), licensed under [MIT](https://mit-license.org).
 
 The project exists solely on top of [Twemoji](https://twemoji.twitter.com). Their graphics are licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0). Please adhere to the [Twemoji attribution requirements](https://github.com/twitter/twemoji#attribution-requirements) when using these emojis.
 
