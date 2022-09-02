@@ -9,17 +9,22 @@ mv ./twemoji-master ./twemoji
 
 echo "[I] Preparing Pages build"
 rm -rf ./public
-mkdir -p ./public
+mkdir -p ./public ./public/Archives
 cp ./Build/* ./public/
-cp ./twemoji/assets/svg/* ./Build/
+mkdir -p ./Build/i ./public/i
+cp ./twemoji/assets/svg/* ./Build/i/
+cp ./twemoji/assets/svg/* ./public/i/
+mv ./maxcdn ./public/maxcdn
 
 echo "[I] Making archives"
 mv ./Build ./twemoji-astonishing
-cd ./public
-7z a -mx9 -mmt$(nproc --all) twemoji-astonishing.zip ../twemoji-astonishing
-7z a -mx9 -mmt$(nproc --all) twemoji-astonishing.7z ../twemoji-astonishing
-tar cvJf twemoji-astonishing.tar.xz ../twemoji-astonishing
+cd ./public/Archives
+7z a -mx9 -mmt$(nproc --all) twemoji-astonishing.zip ../../twemoji-astonishing
+7z a -mx9 -mmt$(nproc --all) twemoji-astonishing.7z ../../twemoji-astonishing
+tar cvJf twemoji-astonishing.tar.xz ../../twemoji-astonishing
 cd ..
 
-echo "[I] Cleaning up"
+echo "[I] Final steps"
+tree -I "i|index.html" -H . -o index.html
+cd ..
 rm -rf ./Build ./twemoji ./twemoji-astonishing ./twemoji.tar.gz

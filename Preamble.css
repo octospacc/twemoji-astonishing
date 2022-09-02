@@ -10,10 +10,12 @@
 	background-repeat: no-repeat;
 	background-position: center center;
 	background-size: 1em 1em;
+	/* Hide fallback emoji text inside the element itself (hacky) */
+	text-indent: -100vw;
 }
 
-/* Prevent image and fallback text emoji overlap */
-.twa > span {
+/* Hide fallback emoji text inside a nested element (correct) */
+.twa > * {
 	font-size: 0px;
 }
 

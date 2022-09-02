@@ -2,12 +2,13 @@ image: alpine:latest
 
 before_script: |
   apk update
-  apk add python3 wget tar p7zip
+  apk add python3 tree wget tar xz p7zip
 
 pages:
   stage: deploy
   script: |
-    python3.10 ./Build.py
+    python3 ./Tools/BuildCSS.py
+    python3 ./Tools/BuildCSS.py --Output="maxcdn/" --URLPrefix="https://twemoji.maxcdn.com/v/latest/svg/"
     ./Tools/DeployPages.sh
   artifacts:
     paths:

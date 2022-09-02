@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 import os
+import rcssmin
 import unicodedata
 from time import ctime
+from pathlib import Path
 from urllib.request import urlopen
-from Tools import rcssmin
 
 cssmin = rcssmin._make_cssmin(python_only=True)
 
@@ -53,16 +54,12 @@ def GetEmojiMeta(Line):
 
 	return {"Code":Code, "Char":Char, "Name":Name}
 
-def WriteCSS(Emojis, URLPrefix):
+def WriteCSS(Emojis, Output, URLPrefix):
+	Path(Output).mkdir(parents=True, exist_ok=True)
 	with open("Preamble.css", "r") as f:
 		Preamble = f.read() + "\n"
 	with open("Comment.css", "r") as f:
 		Comment = f.read().format(BuildTime=ctime(), EmojiCount=str(len(Emojis)))
-
-	try:
-		os.mkdir("Build")
-	except FileExistsError:
-		pass
 
 	for Type in ["Chars Names", "Chars", "Names"]:
 		CSS = Preamble
@@ -87,14 +84,15 @@ def WriteCSS(Emojis, URLPrefix):
 		elif Type == "Names":
 			FileName += ".names"
 
-		with open(f"Build/{FileName}.css", "w") as f:
+		with open(f"{Output}{FileName}.css", "w") as f:
 			f.write(CSS.replace("{CommentBlock}", Comment))
-		with open(f"Build/{FileName}.min.css", "w") as f:
+		with open(f"{Output}{FileName}.min.css", "w") as f:
 			f.write(cssmin(CSS).replace("{CommentBlock}", "\n"+Comment))
 
 def Main(Args):
+	Output = Args.Output if Args.Output else "Build/"
 	EmojiVer = Args.EmojiVer if Args.EmojiVer else "15.0"
-	URLPrefix = Args.URLPrefix if Args.URLPrefix else ""
+	URLPrefix = Args.URLPrefix if Args.URLPrefix else "i/"
 
 	print(f"[I] Getting v{EmojiVer} emoji data")
 	Data = GetEmojiData(EmojiVer)
@@ -102,11 +100,12 @@ def Main(Args):
 	print("[I] Parsing emoji data")
 	Emojis = ParseEmojiData(Data)
 
-	print(f"[I] Writing CSS")
-	WriteCSS(Emojis, URLPrefix)
+	print(f"[I] Writing CSS to: {Output}")
+	WriteCSS(Emojis, Output, URLPrefix)
 
 if __name__ == "__main__":
 	Parser = argparse.ArgumentParser()
+	Parser.add_argument('--Output', type=str)
 	Parser.add_argument('--EmojiVer', type=str)
 	Parser.add_argument('--URLPrefix', type=str)
 
