@@ -21,7 +21,7 @@ jobs:
         sudo apt install -y software-properties-common
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
-        sudo apt install -y python3.10 tree wget tar xz p7zip
+        sudo apt install -y python3.10 tree wget tar xz-utils p7zip
         python3.10 ./Tools/BuildCSS.py
         python3.10 ./Tools/BuildCSS.py --Output="maxcdn" --URLPrefix="https://twemoji.maxcdn.com/v/latest/svg/"
         ./Tools/DeployPages.sh
