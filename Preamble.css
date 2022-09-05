@@ -11,7 +11,7 @@
 	background-position: center center;
 	background-size: 1em 1em;
 	/* Hide fallback emoji text inside the element itself (hacky) */
-	text-indent: -100vw;
+	text-indent: -9999vw;
 }
 
 /* Hide fallback emoji text inside a nested element (correct) */
