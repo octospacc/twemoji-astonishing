@@ -41,7 +41,7 @@ def GetEmojiMeta(Line):
 	Line = Line.lower()
 
 	Code = Line.split(";")[0].rstrip(" ")
-	Code = ReplaceList(Code, ["fe0f","200d"], "")
+	# Code = ReplaceList(Code, ["fe0f","200d"], "")
 	Code = Code.replace("  ", " ")
 	Code = ReplaceList(Code, [" ","--"], "-")
 	Code = Code.removesuffix("-")
